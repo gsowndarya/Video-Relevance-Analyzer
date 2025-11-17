@@ -1,45 +1,84 @@
-# Video-Relevance-Analyzer
+# Video Relevance Analyzer 🎥
 
-A Streamlit application that evaluates how closely a video aligns with its own title and description. It pulls transcripts (YouTube API, captions, or Whisper offline), segments them, embeds them, computes semantic similarity, detects promotional content, and visualizes relevance over time using a clean timeline heatmap.
+A Streamlit dashboard that analyzes YouTube videos by extracting transcripts, measuring semantic similarity, detecting promotional content, and computing relevance scores.
 
-🚀 Features
-1. Multiple Input Methods
-Paste a YouTube URL and automatically fetch metadata + transcripts.
-Upload a local video file and auto‑transcribe using Whisper (if installed).
+## Features
 
-2. Transcript Handling
-Uses YouTubeTranscriptApi when available.
-Falls back to VTT/SRT captions from yt-dlp if needed.
-For plain text transcripts with no timestamps, generates word‑based timestamp estimation.
-Lets users edit the transcript manually before analysis.
+- Extract metadata and transcripts from YouTube URLs
 
-3. Semantic Relevance Scoring
-Embeds segments using SentenceTransformer (MiniLM‑L6‑v2).
-Computes cosine similarity between each segment and the combined title + description.
+- Upload local video files and transcribe them using Whisper (if installed)
 
-Generates:
-Per‑segment relevance score
-Coverage proportion above a similarity threshold
-Average similarity across the timeline
-Overall composite video score
+- Segment transcripts with adjustable word-length and overlap
 
-4. Promotional / Off-topic Detection
-Keyword heuristics plus a lightweight Logistic Regression classifier trained on synthetic promo vs. non‑promo text.
-Flags segments as Promotional / Irrelevant.
+- Compute semantic similarity between transcript segments and the video title/description
 
-5. Visualization Dashboard
+- Detect promotional or irrelevant segments using a lightweight classifier and keyword heuristics
 
-A clean, simple heatmap-like timeline scatterplot, where:
-X‑axis = segment start time
-Point size = segment duration
-Color = relevance (0–100)
-Segment-level table with flags + scores.
+- Generate a timeline heatmap of segment relevance
 
-6. Optional LLM Explanation
-If users enter an OpenAI API key, the app generates a concise, polished explanation summarizing:
-The overall score
-Why it’s high or low
-Flagged examples
+- Provide detailed segment-level scores and flags
 
-7. Exporting Results
-Users can download the full segment-level data as CSV.
+- Export results to CSV
+
+- Optional OpenAI API key input for improved explanations
+
+## Installation
+
+1. Install the required dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Run the Streamlit app:
+```bash
+streamlit run app.py
+```
+
+The app will open in your default web browser at `http://localhost:8501`
+
+## Usage
+
+1. **Enter Video URL**: Paste a YouTube video URL in the sidebar
+2. **Adjust Settings** (optional):
+   - Segment Length: Number of words per segment (default: 200)
+   - Overlap: Number of overlapping words between segments (default: 50)
+3. **Click "Analyze Video"**: The app will extract the transcript and analyze it
+4. **View Results**:
+   - Summary statistics (total segments, average relevance, etc.)
+   - Interactive heatmap showing relevance scores
+   - Detailed segment-by-segment analysis with explanations
+5. **Export**: Download results as CSV for further analysis
+
+## Requirements
+
+- Python 3.8+
+
+- FFmpeg installed (for Whisper + audio extraction)
+
+- Internet connection (for YouTube + embedding model download)
+
+- Whisper offline transcription is optional.
+
+## How It Works
+
+1. **Input Methods**: Paste a YouTube URL or Upload a local video file
+1. **Transcript Extraction**: YouTube transcript via API, YouTube subtitle files (.vtt/.srt), Whisper offline transcription (for uploaded files)
+2. **Segmentation**: Splits the transcript into overlapping segments
+3. **Similarity Calculation**: Computes cosine similarity between title/description and each segment
+4. **Promo Detection**: Checks for promotional keywords (subscribe, like, sponsor, etc.)
+5. **Scoring**: Calculates relevance score (0-100) based on similarity and promo detection
+6. **Visualization**: Creates interactive heatmaps using Plotly
+
+## Notes
+
+- The video must have captions/subtitles enabled for transcript extraction
+- First run will download the sentence transformer model (~80MB)
+- Processing time depends on video length and transcript size
+
+## Troubleshooting
+
+- **No transcript found**: Ensure the video has captions enabled
+- **Slow processing**: Large videos may take time; consider adjusting segment length
+- **Model download**: First run requires internet to download the transformer model
+
+
